@@ -11,6 +11,7 @@ cat <<EOF >>package.json
     "build": "tsc",
     "watch": "tsc -w",
     "server": "tsc && node build/index.js",
+    "kick-start": "npm install && cp src/config.tmp.ts src/config.ts",
     "lint": "eslint --ext .ts .",
     "lintfix": "eslint --fix --ext .ts ."
   },
@@ -43,6 +44,8 @@ module.exports = {
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 }
 EOF
@@ -139,3 +142,32 @@ http
   .listen(8080)
 
 EOF
+
+cat <<EOF >> src/config.tmp.ts
+export const ENV = process.env.ENV || 'develop'
+EOF
+
+if [[ -n $DOCKER && $DOCKER == "true" ]]; then 
+
+cat <<EOF >> Dockerfile
+FROM node:10.22.0-alpine3.9
+
+WORKDIR /usr/app
+
+COPY build/. ./
+COPY package*.json ./
+RUN cp config.tmp.js config.js
+RUN npm install 
+
+CMD ["node", "index.js"]
+EOF
+
+cat <<EOF >> docker-build.sh
+npm run build
+
+DOCKER_TAG=\$IMAGE:\$VERSION
+docker build -t \$DOCKER_TAG -f Dockerfile .
+# docker push \$DOCKER_TAG
+EOF
+
+fi
