@@ -7,7 +7,7 @@ cat <<EOF >> package.json
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "cp config.tmp.js config.js"
+    "boostrap": "cp config.tmp.js config.js",
     "lintfix": "eslint --fix --ext .js .",
     "lint": "eslint --ext .js ."
   },
