@@ -1,4 +1,4 @@
-mkdir ${PRJ_PATH}
+mkdir -p ${PRJ_PATH}
 cd ${PRJ_PATH}
 
 ##required go mod and go version >= 1.12

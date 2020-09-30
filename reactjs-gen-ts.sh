@@ -1,4 +1,4 @@
-mkdir ${PRJ_PATH}
+mkdir -p ${PRJ_PATH}
 cd ${PRJ_PATH}
 cat <<EOF >>package.json
 {
