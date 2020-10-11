@@ -74,7 +74,7 @@ cat <<EOF >> tsconfig.json
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "build", /* Redirect output structure to the directory. */
+    "outDir": "dist", /* Redirect output structure to the directory. */
     "rootDir": "src", /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
@@ -165,9 +165,12 @@ EOF
 cat <<EOF >> docker-build.sh
 npm run build
 
-DOCKER_TAG=\$IMAGE:\$VERSION
-docker build -t \$DOCKER_TAG -f Dockerfile .
-# docker push \$DOCKER_TAG
+DOCKER_TAG=$IMAGE:$VERSION
+docker build -t $DOCKER_TAG -f Dockerfile .
+if [[ -n $PUSH && $PUSH == "true" ]]; then 
+docker push $DOCKER_TAG
+fi
+
 EOF
 
 fi
