@@ -37,9 +37,11 @@ ENTRYPOINT ./exec
 EOF
 
 cat <<EOF >> docker/deploy.sh
-DOCKER_TAG=\$DOCKER_REPO:$VERSION
+DOCKER_TAG=\$DOCKER_REPO:\$VERSION
 cd ..
 docker build -t \$DOCKER_TAG -f docker/Dockerfile .
+if [[ -n \$DOCKER_PUSH && \$DOCKER_PUSH == "true" ]]; then 
 docker push \$DOCKER_TAG
+fi
 EOF
 fi
