@@ -7,10 +7,10 @@ cat <<EOF >>package.json
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node build/index.js",
+    "start": "node dist/index.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "server": "tsc && node build/index.js",
+    "server": "tsc && node dist/index.js",
     "kick-start": "npm install && cp src/config.tmp.ts src/config.ts",
     "lint": "eslint --ext .ts .",
     "lintfix": "eslint --fix --ext .ts ."
@@ -51,7 +51,7 @@ module.exports = {
 EOF
 
 cat <<EOF >> .eslintignore
-build
+dist
 **/*.min.js
 node_modules/
 EOF
@@ -150,16 +150,16 @@ EOF
 if [[ -n $DOCKER && $DOCKER == "true" ]]; then 
 
 cat <<EOF >> Dockerfile
-FROM node:10.22.0-alpine3.9
+FROM node:16-alpine3.11
 
 WORKDIR /usr/app
 
-COPY build/. ./
+ADD dist/. ./dist
+RUN cp dist/config.tmp.js dist/config.js
 COPY package*.json ./
-RUN cp config.tmp.js config.js
 RUN npm install 
 
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
 EOF
 
 cat <<EOF >> docker-build.sh
@@ -168,7 +168,7 @@ npm run build
 DOCKER_TAG=\$IMAGE:\$VERSION
 docker build -t \$DOCKER_TAG -f Dockerfile .
 if [[ -n \$DOCKER_PUSH && \$DOCKER_PUSH == "true" ]]; then 
-docker push $DOCKER_TAG
+docker push \$DOCKER_TAG
 fi
 
 EOF
