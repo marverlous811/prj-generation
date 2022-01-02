@@ -7,10 +7,10 @@ cat <<EOF >>package.json
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "NODE_PATH=dist/ node dist/index.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "server": "tsc && node dist/index.js",
+    "server": "tsc && NODE_PATH=dist/ node dist/index.js",
     "kick-start": "npm install && cp src/config.tmp.ts src/config.ts",
     "lint": "eslint --ext .ts .",
     "lintfix": "eslint --fix --ext .ts ."
@@ -98,7 +98,7 @@ cat <<EOF >> tsconfig.json
     // "noFallthroughCasesInSwitch": true,    /* Report errors for fallthrough cases in switch statement. */
     /* Module Resolution Options */
     // "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    // "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
+    "baseUrl": "src",                       /* Base directory to resolve non-absolute module names. */
     // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                       /* List of folders to include type definitions from. */
@@ -113,8 +113,8 @@ cat <<EOF >> tsconfig.json
     // "inlineSourceMap": true,               /* Emit a single file with source maps instead of having a separate file. */
     // "inlineSources": true,                 /* Emit the source alongside the sourcemaps within a single file; requires '--inlineSourceMap' or '--sourceMap' to be set. */
     /* Experimental Options */
-    // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
-    // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
+    "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
+    "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     /* Advanced Options */
     "resolveJsonModule": true, /* Include modules imported with '.json' extension */
     "skipLibCheck": true, /* Skip type checking of declaration files. */
