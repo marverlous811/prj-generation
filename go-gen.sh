@@ -22,7 +22,7 @@ mkdir docker
 
 cat << EOF >> docker/Dockerfile
 # build stage
-FROM golang:1.12-alpine AS build-env
+FROM golang:1.16-alpine AS build-env
 RUN apk --no-cache add build-base git mercurial gcc 
 ADD . /src
 RUN cd /src && go build -o exec
