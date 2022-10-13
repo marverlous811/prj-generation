@@ -8,6 +8,7 @@ cat <<EOF >>package.json
   "main": "index.js",
   "scripts": {
     "start": "NODE_PATH=dist/ node dist/index.js",
+    "prebuild": "rm -rf dist",
     "build": "tsc",
     "watch": "tsc -w",
     "server": "tsc && NODE_PATH=dist/ node dist/index.js",
@@ -21,6 +22,16 @@ cat <<EOF >>package.json
 EOF
 
 npm install --save-dev @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier typescript
+
+cat <<EOF >>.env
+ENV=local
+EOF
+
+cat <<EOF >> start.sh
+#/bin/bash
+export $(cat .env | xargs)
+npm run build && npm run start
+EOF
 
 cat <<EOF >> .prettierrc
 {
