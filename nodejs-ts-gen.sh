@@ -55,6 +55,17 @@ dist
 node_modules/
 EOF
 
+cat <<EOF >> .gitignore
+node_modules
+dist
+.vscode
+sample
+**/.DS_Store
+tmp
+package-lock.json
+.env
+EOF
+
 cat <<EOF >> tsconfig.json
 {
   "compilerOptions": {
@@ -142,7 +153,7 @@ http
 
 EOF
 
-cat <<EOF >> src/config.tmp.ts
+cat <<EOF >> src/config.ts
 export const ENV = process.env.ENV || 'develop'
 EOF
 
@@ -154,8 +165,7 @@ FROM node:16-alpine3.11
 WORKDIR /usr/app
 
 ADD dist/. ./dist
-RUN cp dist/config.tmp.js dist/config.js
-COPY package*.json ./
+COPY package.json ./
 RUN npm install 
 
 CMD ["node", "dist/index.js"]
