@@ -5,14 +5,18 @@ cat <<EOF >>package.json
   "name": "${PRJ_NAME}",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./lib/index.js",
+  "files": [
+    "lib/"
+  ],
   "scripts": {
     "start": "NODE_PATH=dist/ node dist/index.js",
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "watch": "tsc -w",
     "server": "tsc && NODE_PATH=dist/ node dist/index.js",
-    "kick-start": "npm install && cp src/config.tmp.ts src/config.ts",
+    "libbuild": "rm -rf lib && tsc -p tsconfig.module.json",
     "lint": "eslint --ext .ts .",
     "lintfix": "eslint --fix --ext .ts ."
   },
@@ -64,6 +68,8 @@ cat <<EOF >> .eslintignore
 dist
 **/*.min.js
 node_modules/
+lib
+!src/lib
 EOF
 
 cat <<EOF >> .gitignore
@@ -75,6 +81,8 @@ sample
 tmp
 package-lock.json
 .env
+lib
+!src/lib
 EOF
 
 cat <<EOF >> tsconfig.json
@@ -148,6 +156,20 @@ cat <<EOF >> tsconfig.json
   "exclude": [
     "node_modules"
   ]
+}
+EOF
+
+cat <<EOF >> tsconfig.module.json
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "CommonJS",
+        "outDir": "./lib",
+        "declaration": true
+    },
+    "exclude": [
+        "src/test"
+    ]
 }
 EOF
 
