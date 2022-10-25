@@ -18,14 +18,17 @@ cat <<EOF >>package.json
     "server": "tsc && NODE_PATH=dist/ node dist/index.js",
     "libbuild": "rm -rf lib && tsc -p tsconfig.module.json",
     "lint": "eslint --ext .ts .",
-    "lintfix": "eslint --fix --ext .ts ."
+    "lintfix": "eslint --fix --ext .ts .",
+    "test": "npm run unit-test && npm run integration-test",
+    "unit-test": "NODE_PATH=dist/ mocha \"dist/test/**/*.test.js\"",
+    "integration-test": "NODE_PATH=dist/ mocha \"dist/test/**/*.spec.js\""
   },
   "author": "",
   "license": "ISC"
 }
 EOF
 
-npm install --save-dev @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier typescript
+npm install --save-dev @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier typescript source-map-support mocha chai @types/mocha @types/chai
 
 cat <<EOF >>.env
 ENV=local
@@ -165,7 +168,8 @@ cat <<EOF >> tsconfig.module.json
     "compilerOptions": {
         "module": "CommonJS",
         "outDir": "./lib",
-        "declaration": true
+        "declaration": true,
+        "moduleResolution": "node"
     },
     "exclude": [
         "src/test"
