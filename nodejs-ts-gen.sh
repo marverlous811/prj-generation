@@ -23,12 +23,13 @@ cat <<EOF >>package.json
     "unit-test": "NODE_PATH=dist/ mocha \"dist/test/**/*.test.js\"",
     "integration-test": "NODE_PATH=dist/ mocha \"dist/test/**/*.spec.js\""
   },
-  "author": "",
+  "author": "shadow-walker811",
   "license": "ISC"
 }
 EOF
 
 npm install --save-dev @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint eslint-config-prettier eslint-plugin-prettier prettier typescript source-map-support mocha chai @types/mocha @types/chai
+npm install --save dotenv
 
 cat <<EOF >>.env
 ENV=local
@@ -36,7 +37,7 @@ EOF
 
 cat <<EOF >> start.sh
 #/bin/bash
-export $(cat .env | xargs)
+export \$(cat .env | xargs)
 npm run build && npm run start
 EOF
 
@@ -191,32 +192,55 @@ http
 EOF
 
 cat <<EOF >> src/config.ts
+import path from 'path'
+import * as dotenv from 'dotenv'
+
+const envPath = path.join(process.cwd(), '.env')
+dotenv.config({
+  path: envPath,
+  override: true,
+})
+
 export const ENV = process.env.ENV || 'develop'
 EOF
 
 if [[ -n $DOCKER && $DOCKER == "true" ]]; then 
 
 cat <<EOF >> Dockerfile
-FROM node:16-alpine3.11
-
+FROM node:18.18-alpine as builder
 WORKDIR /usr/app
-
-ADD dist/. ./dist
 COPY package.json ./
-RUN npm install 
+COPY package-lock.json ./
+RUN npm install --frozen-lockfile
+COPY . .
+RUN npm run build
 
+FROM node:18.18-alpine
+WORKDIR /usr/app
+ENV NODE_ENV production
+ENV NODE_PATH dist/
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --frozen-lockfile --production
+COPY --from=builder /usr/app/dist ./dist
 CMD ["node", "dist/index.js"]
 EOF
 
 cat <<EOF >> docker-build.sh
-npm run build
-
 DOCKER_TAG=\$IMAGE:\$VERSION
 docker build -t \$DOCKER_TAG -f Dockerfile .
 if [[ -n \$DOCKER_PUSH && \$DOCKER_PUSH == "true" ]]; then 
 docker push \$DOCKER_TAG
 fi
 
+EOF
+
+cat <<EOF >> .dockerignore
+node_modules
+dist
+.vscode
+sample
+**/.DS_Store
 EOF
 
 fi
